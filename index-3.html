@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kuiz Bahasa Arab Tingkatan 3</title>
+<meta name="description" content="Kuiz interaktif Bahasa Arab KSSM Tingkatan 3 — kosa kata, tarakib dan jenis ayat." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#13211d; --teal:#0d5249; --teal-deep:#073b34; --teal-soft:#e7efe9;
+    --gold:#c98a16; --gold-soft:#f3e2bd; --sand:#f5efe1; --card:#fffdf7;
+    --line:#e6dcc4; --muted:#6c7670;
+    --ok:#1d7a55; --ok-soft:#e3f3ea; --err:#b14228; --err-soft:#f8e6df;
+    --shadow:0 14px 40px -18px rgba(13,82,73,.45);
+    --r:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:"Plus Jakarta Sans",system-ui,sans-serif;
+    color:var(--ink); line-height:1.5;
+    background:
+      radial-gradient(1200px 500px at 110% -10%, #10665b22, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #c98a1622, transparent 55%),
+      var(--sand);
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:clamp(14px,3vw,40px);
+  }
+  .stage{width:100%;max-width:680px}
+
+  /* ---- Star motif (khatam) ---- */
+  .star{display:inline-block;width:1em;height:1em;vertical-align:-.12em;
+    background:currentColor;
+    -webkit-mask:var(--starmask) center/contain no-repeat; mask:var(--starmask) center/contain no-repeat;}
+  :root{--starmask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0l2.6 6.3L21 4.2l-2.1 6.4L24 12l-5.1 1.4L21 19.8l-6.4-2.1L12 24l-2.6-6.3L3 19.8l2.1-6.4L0 12l5.1-1.4L3 4.2l6.4 2.1z'/%3E%3C/svg%3E");}
+
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:var(--r); box-shadow:var(--shadow);
+    overflow:hidden; position:relative;
+  }
+  .card::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;
+    background:linear-gradient(90deg,var(--teal),var(--gold) 70%,var(--gold));}
+
+  /* ---- Intro ---- */
+  .intro{padding:clamp(26px,5vw,46px) clamp(22px,5vw,46px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:.5em;
+    font-size:.74rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--teal);background:var(--teal-soft);padding:.45em .9em;border-radius:999px}
+  .titleAr{font-family:"Amiri",serif;font-size:clamp(2.4rem,9vw,3.7rem);line-height:1.1;
+    color:var(--teal-deep);margin:.32em 0 .05em;direction:rtl}
+  .titleMs{font-size:clamp(1.25rem,4.5vw,1.7rem);font-weight:800;letter-spacing:-.01em}
+  .lead{color:var(--muted);margin:.7em 0 1.5em;max-width:46ch;font-size:1.02rem}
+  .facts{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.7em}
+  .fact{flex:1 1 130px;background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px}
+  .fact b{display:block;font-size:1.5rem;color:var(--teal);font-weight:800;line-height:1}
+  .fact span{font-size:.82rem;color:var(--muted)}
+
+  .btn{font-family:inherit;font-weight:700;font-size:1.02rem;cursor:pointer;
+    border:none;border-radius:13px;padding:15px 24px;transition:transform .15s ease,box-shadow .2s ease,background .2s}
+  .btn-primary{background:var(--teal);color:#fff;width:100%;
+    box-shadow:0 10px 22px -10px var(--teal)}
+  .btn-primary:hover{background:var(--teal-deep);transform:translateY(-2px)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-ghost{background:transparent;color:var(--teal);border:1.5px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--teal);background:var(--teal-soft)}
+
+  /* ---- Quiz header ---- */
+  .qhead{padding:18px clamp(20px,4vw,30px) 0;display:flex;align-items:center;
+    justify-content:space-between;gap:14px}
+  .count{font-weight:700;font-size:.92rem;color:var(--muted)}
+  .count b{color:var(--teal)}
+  .score-pill{font-weight:800;font-size:.9rem;color:var(--gold);
+    background:var(--gold-soft);padding:.4em .85em;border-radius:999px}
+  .track{height:7px;background:var(--teal-soft);border-radius:999px;margin:14px clamp(20px,4vw,30px) 4px;overflow:hidden}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--gold));
+    border-radius:999px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+  /* ---- Question ---- */
+  .qbody{padding:clamp(16px,4vw,26px) clamp(20px,4vw,30px) clamp(22px,4vw,30px)}
+  .tag{display:inline-flex;align-items:center;gap:.5em;font-size:.72rem;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  .prompt{font-weight:600;font-size:1.06rem;margin-bottom:8px}
+  .stim{font-family:"Amiri",serif;direction:rtl;text-align:center;
+    font-size:clamp(1.9rem,7vw,2.7rem);line-height:1.7;color:var(--teal-deep);
+    background:linear-gradient(180deg,#fff, #fbf7ec);border:1px solid var(--line);
+    border-radius:14px;padding:.5em .6em;margin:6px 0 20px}
+  .opts{display:grid;gap:11px}
+  .opt{display:flex;align-items:center;gap:13px;width:100%;text-align:start;
+    background:#fff;border:1.5px solid var(--line);border-radius:13px;
+    padding:15px 16px;font-family:inherit;font-size:1.02rem;color:var(--ink);cursor:pointer;
+    transition:border-color .15s,background .15s,transform .1s}
+  .opt .key{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:var(--teal-soft);color:var(--teal);font-weight:800;font-size:.95rem;transition:.15s}
+  .opt .txt{flex:1}
+  .opt.ar .txt{font-family:"Amiri",serif;direction:rtl;text-align:right;font-size:1.5rem;line-height:1.4}
+  .opt:not(:disabled):hover{border-color:var(--teal);transform:translateY(-1px)}
+  .opt:disabled{cursor:default}
+  .opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.correct .key{background:var(--ok);color:#fff}
+  .opt.wrong{border-color:var(--err);background:var(--err-soft)}
+  .opt.wrong .key{background:var(--err);color:#fff}
+  .opt.dim{opacity:.55}
+
+  .feedback{margin-top:18px;border-radius:13px;padding:15px 17px;display:none;
+    border:1px solid;font-size:.97rem}
+  .feedback.show{display:block;animation:rise .3s ease}
+  .feedback.good{background:var(--ok-soft);border-color:#bfe3cf}
+  .feedback.bad{background:var(--err-soft);border-color:#f0cabd}
+  .feedback .fb-title{font-weight:800;display:flex;align-items:center;gap:.5em;margin-bottom:3px}
+  .feedback.good .fb-title{color:var(--ok)} .feedback.bad .fb-title{color:var(--err)}
+  .feedback .fb-body{color:#43504a}
+  .feedback .fb-body .ar{font-family:"Amiri",serif;font-size:1.25em;direction:rtl}
+  .next-row{margin-top:18px;display:flex;justify-content:flex-end}
+  .next-row .btn{display:none;padding:13px 30px}
+  .next-row .btn.show{display:inline-block}
+
+  /* ---- Result ---- */
+  .result{padding:clamp(28px,5vw,46px) clamp(22px,5vw,40px);text-align:center}
+  .ring{--p:0;width:170px;height:170px;border-radius:50%;margin:6px auto 18px;
+    display:grid;place-items:center;
+    background:conic-gradient(var(--gold) calc(var(--p)*1%), var(--teal-soft) 0);
+    transition:background 1s ease}
+  .ring .inner{width:132px;height:132px;border-radius:50%;background:var(--card);
+    display:grid;place-items:center;box-shadow:inset 0 2px 10px rgba(0,0,0,.05)}
+  .ring .pct{font-size:2.5rem;font-weight:800;color:var(--teal-deep);line-height:1}
+  .ring .sub{font-size:.8rem;color:var(--muted);font-weight:600}
+  .verdict{font-family:"Amiri",serif;font-size:2rem;color:var(--teal-deep);direction:rtl;margin-bottom:2px}
+  .vmsg{font-weight:700;font-size:1.25rem;margin-bottom:6px}
+  .vsub{color:var(--muted);margin-bottom:24px}
+  .res-actions{display:flex;gap:11px;flex-wrap:wrap}
+  .res-actions .btn{flex:1 1 160px}
+
+  /* ---- Review ---- */
+  .review{margin-top:26px;text-align:start;display:none}
+  .review.show{display:block}
+  .review h3{font-size:.95rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+  .rev-item{border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:10px;background:#fff}
+  .rev-item .rq{font-weight:600;margin-bottom:6px;display:flex;gap:8px}
+  .rev-item .rq .mk{flex:none}
+  .rev-item .ar{font-family:"Amiri",serif;direction:rtl;font-size:1.2em}
+  .rev-line{font-size:.92rem;color:#4c574f;margin-top:3px}
+  .rev-line .good{color:var(--ok);font-weight:700}
+  .rev-line .bad{color:var(--err);font-weight:700;text-decoration:line-through}
+
+  footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:18px}
+  footer .star{color:var(--gold);font-size:.7rem;margin:0 .4em}
+
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .swap{animation:swap .35s cubic-bezier(.4,0,.2,1)}
+  @keyframes swap{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="stage">
+  <!-- INTRO -->
+  <section class="card" id="screen-intro">
+    <div class="intro">
+      <span class="eyebrow"><span class="star"></span> KSSM &middot; Tingkatan 3</span>
+      <h1 class="titleAr">اِخْتِبَار اللُّغَة العَرَبِيَّة</h1>
+      <p class="titleMs">Kuiz Bahasa Arab</p>
+      <p class="lead">Uji penguasaan kosa kata, tarakib (susunan ayat) dan jenis ayat mengikut tema Tingkatan 3. Setiap soalan memberi maklum balas serta-merta supaya kamu belajar sambil menjawab.</p>
+      <div class="facts">
+        <div class="fact"><b id="fact-total">0</b><span>soalan</span></div>
+        <div class="fact"><b>5</b><span>tema</span></div>
+        <div class="fact"><b>∞</b><span>cuba semula</span></div>
+      </div>
+      <button class="btn btn-primary" id="btn-start">Mula Kuiz</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="card" id="screen-quiz" hidden>
+    <div class="qhead">
+      <span class="count">Soalan <b id="q-now">1</b> / <span id="q-total">0</span></span>
+      <span class="score-pill"><span class="star"></span> <span id="q-score">0</span> mata</span>
+    </div>
+    <div class="track"><div class="bar" id="q-bar"></div></div>
+    <div class="qbody">
+      <div class="tag" id="q-tag"></div>
+      <p class="prompt" id="q-prompt"></p>
+      <div class="stim" id="q-stim" hidden></div>
+      <div class="opts" id="q-opts"></div>
+      <div class="feedback" id="q-feedback">
+        <div class="fb-title" id="fb-title"></div>
+        <div class="fb-body" id="fb-body"></div>
+      </div>
+      <div class="next-row">
+        <button class="btn btn-primary" id="btn-next" style="width:auto">Seterusnya →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="card" id="screen-result" hidden>
+    <div class="result">
+      <span class="eyebrow"><span class="star"></span> Keputusan</span>
+      <div class="ring" id="res-ring"><div class="inner">
+        <div><div class="pct" id="res-pct">0%</div><div class="sub" id="res-raw">0 / 0</div></div>
+      </div></div>
+      <p class="verdict" id="res-ar"></p>
+      <p class="vmsg" id="res-msg"></p>
+      <p class="vsub" id="res-sub"></p>
+      <div class="res-actions">
+        <button class="btn btn-ghost" id="btn-review">Semak Jawapan</button>
+        <button class="btn btn-primary" id="btn-retry">Cuba Lagi</button>
+      </div>
+      <div class="review" id="res-review"><h3>Semakan Jawapan</h3><div id="rev-list"></div></div>
+    </div>
+  </section>
+
+  <footer>Bahasa Arab Tingkatan 3 <span class="star"></span> Dibina untuk GitHub Pages</footer>
+</main>
+
+<script>
+/* =========================================================
+   BANK SOALAN — mudah ditambah/diubah.
+   type "ms"  : pilihan dalam Bahasa Melayu
+   type "ar"  : pilihan dalam Bahasa Arab (papar RTL)
+   stim       : (pilihan) teks Arab besar di atas soalan
+   a          : indeks jawapan betul (0-based)
+   why        : penjelasan ringkas (boleh ada <span class="ar"> )
+========================================================= */
+const BANK = [
+  { tag:"Terjemahan", prompt:"Apakah maksud ayat ini?",
+    stim:"يَصْنَعُ الطَّالِبُ الرَّفَّ بِنَفْسِهِ.", type:"ms",
+    opts:["Pelajar membeli rak di kedai.","Pelajar membuat rak itu sendiri.","Pelajar memecahkan rak itu.","Pelajar mencari rak di sekolah."],
+    a:1, why:"<span class='ar'>يَصْنَعُ</span> = membuat, <span class='ar'>بِنَفْسِهِ</span> = dengan sendiri." },
+
+  { tag:"Terjemahan", prompt:"Apakah maksud ayat ini?",
+    stim:"لَا تَرْمِ النِّفَايَاتِ فِي الشَّارِعِ.", type:"ms",
+    opts:["Kumpulkan sampah di jalan.","Bakar sampah di jalan.","Jangan buang sampah di jalan.","Sampah banyak di jalan."],
+    a:2, why:"<span class='ar'>لَا تَرْمِ</span> ialah larangan (nahi) = jangan buang." },
+
+  { tag:"Kosa Kata", prompt:"Apakah maksud perkataan ini?",
+    stim:"المِطْرَقَة", type:"ms",
+    opts:["Gergaji","Tukul","Paku","Pemutar skru"], a:1,
+    why:"<span class='ar'>المِطْرَقَة</span> = tukul. Gergaji = <span class='ar'>المِنْشَار</span>." },
+
+  { tag:"Kosa Kata", prompt:"Apakah maksud perkataan ini?",
+    stim:"الفُرْن", type:"ms",
+    opts:["Periuk","Ketuhar","Pinggan","Dapur gas"], a:1,
+    why:"<span class='ar'>الفُرْن</span> = ketuhar, digunakan untuk membakar (<span class='ar'>الخَبْز</span>)." },
+
+  { tag:"Kosa Kata", prompt:"Pilih perkataan Arab yang betul:",
+    type:"ar", prompt2:"\"Lampu isyarat\"",
+    opts:["النِّفَايَات","إِشَارَة المُرُور","رُخْصَة القِيَادَة","المَمَرّ"], a:1,
+    why:"<span class='ar'>إِشَارَة المُرُور</span> = lampu/isyarat lalu lintas." },
+
+  { tag:"Jenis Tarkib", prompt:"Tarkib ini jenis apa?",
+    stim:"كِتَابُ مُعَلِّمِ اللُّغَةِ", type:"ms",
+    opts:["Tarkib Na'ti (sifat)","Tarkib Idafi (sandaran)","Tarkib 'Atfi (kata hubung)","Jumlah Inshaiyah"], a:1,
+    why:"Susunan isim + isim yang menunjukkan pemilikan = Tarkib Idafi." },
+
+  { tag:"Jenis Tarkib", prompt:"Tarkib ini jenis apa?",
+    stim:"الكِتَابُ الجَدِيدُ", type:"ms",
+    opts:["Tarkib Idafi (sandaran)","Tarkib 'Atfi (kata hubung)","Tarkib Na'ti (sifat)","Jumlah Khabariyah"], a:2,
+    why:"<span class='ar'>الجَدِيدُ</span> menyifatkan <span class='ar'>الكِتَابُ</span> = Tarkib Na'ti (sifat-mausuf)." },
+
+  { tag:"Jenis Tarkib", prompt:"Tarkib ini jenis apa?",
+    stim:"الكِتَابُ وَالقَلَمُ", type:"ms",
+    opts:["Tarkib 'Atfi (kata hubung)","Tarkib Idafi (sandaran)","Tarkib Na'ti (sifat)","Jumlah Amr"], a:0,
+    why:"Dihubungkan dengan huruf 'atf <span class='ar'>وَ</span> (dan) = Tarkib 'Atfi." },
+
+  { tag:"Jenis Tarkib", prompt:"Tarkib ini jenis apa?",
+    stim:"أَطْوَلُ الطُّلَّابِ", type:"ms",
+    opts:["Tarkib Na'ti","Tarkib 'Atfi","Tarkib Idafi","Jumlah Mufidah"], a:2,
+    why:"Isim tafdil (<span class='ar'>أَفْعَل</span>) + isim = Tarkib Idafi. Maksud: pelajar paling tinggi." },
+
+  { tag:"Jenis Ayat", prompt:"Ayat ini termasuk jenis apa?",
+    stim:"هَلْ تُسَلِّمُ عَلَى جِيرَانِكَ؟", type:"ms",
+    opts:["Khabariyah (penyata)","Inshaiyah — Istifham (soalan)","Inshaiyah — Amr (suruhan)","Khabariyah Manfiyah"], a:1,
+    why:"Dimulakan dengan <span class='ar'>هَلْ</span> (adakah) = ayat soalan / istifham." },
+
+  { tag:"Jenis Ayat", prompt:"Ayat ini termasuk jenis apa?",
+    stim:"مَا ذَهَبَ الطَّالِبُ إِلَى المَكْتَبَةِ.", type:"ms",
+    opts:["Khabariyah Muthbatah (positif)","Inshaiyah — Amr","Khabariyah Manfiyah (negatif)","Istifham"], a:2,
+    why:"<span class='ar'>مَا</span> menafikan kata kerja lampau = Khabariyah Manfiyah." },
+
+  { tag:"Jenis Ayat", prompt:"Ayat ini termasuk jenis apa?",
+    stim:"يَا طَالِبُ! اكْتُبِ الوَاجِبَاتِ.", type:"ms",
+    opts:["Inshaiyah — Amr (suruhan)","Khabariyah","Istifham","Manfiyah dengan لن"], a:0,
+    why:"<span class='ar'>اكْتُبْ</span> ialah fi'il amr = ayat suruhan (inshaiyah)." },
+
+  { tag:"'Adad Tartibi", prompt:"Apakah \"kelima\" (muzakkar) dalam bahasa Arab?",
+    type:"ar",
+    opts:["الرَّابِع","الخَامِس","السَّادِس","الثَّالِث"], a:1,
+    why:"<span class='ar'>الخَامِس</span> = kelima. <span class='ar'>الرَّابِع</span>=keempat, <span class='ar'>السَّادِس</span>=keenam." },
+
+  { tag:"'Adad Tartibi", prompt:"Apakah maksud nombor tertib ini?",
+    stim:"الطَّالِبُ الأَوَّلُ", type:"ms",
+    opts:["Pelajar kedua","Pelajar terakhir","Pelajar pertama","Pelajar ketiga"], a:2,
+    why:"<span class='ar'>الأَوَّل</span> = pertama (nombor tertib)." },
+
+  { tag:"Damir / Idafah", prompt:"Pilih terjemahan yang betul:",
+    type:"ar", prompt2:"\"guru kamu berdua\"",
+    opts:["مُعَلِّمُهُمَا","مُعَلِّمُكُمَا","مُعَلِّمُهُنَّ","مُعَلِّمُكُنَّ"], a:1,
+    why:"<span class='ar'>كُمَا</span> = kamu berdua. <span class='ar'>هُمَا</span>=mereka berdua." },
+
+  { tag:"Terjemahan", prompt:"Pilih ayat Arab yang betul:",
+    type:"ar", prompt2:"\"Panaskan ketuhar sebelum membakar.\"",
+    opts:["سَخِّنُوا الفُرْنَ قَبْلَ الخَبْزِ.","اغْسِلُوا الخُضْرَاوَاتِ بِالمَاءِ.","قِفْ عِنْدَ الإِشَارَةِ الحَمْرَاءِ.","ازْرَعُوا الأَشْجَارَ الخَضْرَاءَ."], a:0,
+    why:"<span class='ar'>سَخِّنُوا</span>=panaskan, <span class='ar'>الفُرْن</span>=ketuhar, <span class='ar'>الخَبْز</span>=membakar." },
+
+  { tag:"Kosa Kata", prompt:"Apakah maksud perkataan ini?",
+    stim:"النَّجَّار", type:"ms",
+    opts:["Pemandu","Tukang masak","Tukang kayu","Petani"], a:2,
+    why:"<span class='ar'>النَّجَّار</span> = tukang kayu (bekerja di <span class='ar'>الوَرْشَة</span> / bengkel)." },
+
+  { tag:"Terjemahan", prompt:"Apakah maksud ayat ini?",
+    stim:"البِيئَةُ النَّظِيفَةُ تَحْمِي صِحَّتَنَا.", type:"ms",
+    opts:["Kebersihan menjaga sekolah kita.","Alam sekitar yang bersih melindungi kesihatan kita.","Kita mesti membersihkan rumah kita.","Alam sekitar kita sangat kotor."],
+    a:1, why:"<span class='ar'>البِيئَة النَّظِيفَة</span>=alam sekitar bersih, <span class='ar'>تَحْمِي صِحَّتَنَا</span>=melindungi kesihatan kita." },
+];
+
+/* ---------- Logic ---------- */
+const $ = (id)=>document.getElementById(id);
+let order=[], idx=0, score=0, locked=false, results=[];
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+
+function buildQuestion(srcIndex){
+  const q = BANK[srcIndex];
+  // shuffle options, remember correct
+  const order = shuffle(q.opts.map((t,i)=>({t,i})));
+  const correct = order.findIndex(o=>o.i===q.a);
+  return {q, order, correct};
+}
+
+function start(){
+  order = shuffle(BANK.map((_,i)=>i));
+  idx=0; score=0; results=[];
+  $("q-total").textContent = order.length;
+  $("screen-intro").hidden=true; $("screen-result").hidden=true; $("screen-quiz").hidden=false;
+  renderQuestion();
+}
+
+function renderQuestion(){
+  locked=false;
+  const built = buildQuestion(order[idx]);
+  const {q,order:opts,correct} = built;
+  current = {q,opts,correct};
+
+  $("q-now").textContent = idx+1;
+  $("q-score").textContent = score;
+  $("q-bar").style.width = ((idx)/order.length*100)+"%";
+
+  $("q-tag").innerHTML = '<span class="star"></span> '+q.tag;
+  $("q-prompt").innerHTML = q.prompt + (q.prompt2?` <em style="color:var(--teal);font-style:normal">${q.prompt2}</em>`:"");
+  const stim = $("q-stim");
+  if(q.stim){stim.hidden=false; stim.textContent=q.stim;} else {stim.hidden=true;}
+
+  const wrap = $("q-opts"); wrap.innerHTML="";
+  const keys=["A","B","C","D","E"];
+  opts.forEach((o,i)=>{
+    const b=document.createElement("button");
+    b.className="opt"+(q.type==="ar"?" ar":"");
+    b.innerHTML=`<span class="key">${keys[i]}</span><span class="txt">${o.t}</span>`;
+    b.onclick=()=>choose(i,b);
+    wrap.appendChild(b);
+  });
+
+  const fb=$("q-feedback"); fb.className="feedback";
+  $("btn-next").classList.remove("show");
+  $("btn-next").textContent = (idx===order.length-1)?"Lihat Keputusan →":"Seterusnya →";
+  $("qbody")?.classList?.remove("swap");
+  const body=document.querySelector("#screen-quiz .qbody"); body.classList.remove("swap"); void body.offsetWidth; body.classList.add("swap");
+}
+
+let current=null;
+function choose(i,btn){
+  if(locked) return; locked=true;
+  const {q,opts,correct}=current;
+  const buttons=[...document.querySelectorAll("#q-opts .opt")];
+  const right = i===correct;
+  if(right) score++;
+  results.push({q, chosen:opts[i].t, correct:opts[correct].t, right});
+
+  buttons.forEach((b,bi)=>{
+    b.disabled=true;
+    if(bi===correct) b.classList.add("correct");
+    else if(bi===i) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  $("q-score").textContent=score;
+  $("q-bar").style.width = ((idx+1)/order.length*100)+"%";
+
+  const fb=$("q-feedback");
+  fb.classList.add("show", right?"good":"bad");
+  $("fb-title").innerHTML = right ? '✦ Tepat sekali!' : '✕ Belum tepat';
+  $("fb-body").innerHTML = (right?"":`Jawapan betul: <b>${opts[correct].t}</b>. `) + (q.why||"");
+  $("btn-next").classList.add("show");
+  $("btn-next").focus();
+}
+
+function next(){
+  if(idx<order.length-1){ idx++; renderQuestion(); }
+  else showResult();
+}
+
+function showResult(){
+  $("screen-quiz").hidden=true; $("screen-result").hidden=false;
+  const total=order.length, pct=Math.round(score/total*100);
+  $("res-raw").textContent=`${score} / ${total}`;
+  $("res-ring").style.setProperty("--p",0);
+  // animate ring + percent
+  let cur=0; const step=()=>{cur+=Math.max(1,Math.round(pct/22));if(cur>=pct)cur=pct;
+    $("res-ring").style.setProperty("--p",cur); $("res-pct").textContent=cur+"%";
+    if(cur<pct) requestAnimationFrame(step);};
+  requestAnimationFrame(step);
+
+  let ar,msg,sub;
+  if(pct>=90){ar="مُمْتَاز!";msg="Cemerlang!";sub="Penguasaan kamu sangat baik. Teruskan!";}
+  else if(pct>=70){ar="جَيِّد جِدًّا";msg="Bagus sekali!";sub="Hampir sempurna — ulang kaji bahagian yang tersilap.";}
+  else if(pct>=50){ar="جَيِّد";msg="Usaha yang baik.";sub="Kamu di landasan betul. Cuba lagi untuk markah lebih tinggi.";}
+  else {ar="حَاوِلْ مَرَّةً أُخْرَى";msg="Jangan putus asa.";sub="Semak jawapan dan cuba sekali lagi — kamu pasti boleh!";}
+  $("res-ar").textContent=ar; $("res-msg").textContent=msg; $("res-sub").textContent=sub;
+
+  // build review
+  const list=$("rev-list"); list.innerHTML="";
+  results.forEach((r,n)=>{
+    const item=document.createElement("div"); item.className="rev-item";
+    const stim = r.q.stim?`<span class="ar">${r.q.stim}</span>`:(r.q.prompt2||"");
+    let body=`<div class="rq"><span class="mk">${r.right?'✦':'✕'}</span><span>${n+1}. ${r.q.prompt} ${stim}</span></div>`;
+    if(r.right){ body+=`<div class="rev-line"><span class="good">${r.correct}</span> ✓</div>`; }
+    else { body+=`<div class="rev-line"><span class="bad">${r.chosen}</span> → <span class="good">${r.correct}</span></div>`; }
+    item.innerHTML=body; list.appendChild(item);
+  });
+}
+
+/* events */
+$("fact-total").textContent=BANK.length;
+$("btn-start").onclick=start;
+$("btn-next").onclick=next;
+$("btn-retry").onclick=()=>{ $("res-review").classList.remove("show"); start(); };
+$("btn-review").onclick=()=>{ $("res-review").classList.toggle("show");
+  $("res-review").scrollIntoView({behavior:"smooth",block:"nearest"}); };
+
+/* keyboard: A-D to answer, Enter for next */
+document.addEventListener("keydown",(e)=>{
+  if(!$("screen-quiz").hidden){
+    const k=e.key.toLowerCase();
+    const map={a:0,b:1,c:2,d:3};
+    if(k in map && !locked){const b=document.querySelectorAll("#q-opts .opt")[map[k]]; if(b) b.click();}
+    if(e.key==="Enter" && $("btn-next").classList.contains("show")) next();
+  }
+  if(!$("screen-intro").hidden && e.key==="Enter") start();
+});
+</script>
+</body>
+</html>
